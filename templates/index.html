@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+<meta charset="UTF-8">
+<title>AI Datu Vizualizācija</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<link rel="stylesheet" href="static/style.css">
+</head>
+
+<body>
+<h2>AI balstīta datu vizualizācija</h2>
+
+<div id="dropzone">
+    <img src="{{ url_for('static', filename='icons/upload.png') }}" alt="Upload">
+    Noklikšķini vai velc šeit failu
+</div>
+<input type="file" id="fileInput" style="display:none">
+
+<div id="status"></div>
+<div id="choices"></div>
+
+<div class="controls">
+    <label>Top N: <input type="number" id="topN" value="10" min="1" max="100"></label>
+    <label>Sort: 
+        <select id="sort">
+            <option value="desc">Dilstoši</option>
+            <option value="asc">Augoši</option>
+        </select>
+    </label>
+    <label>Y min: <input type="number" id="ymin"></label>
+    <label>Y max: <input type="number" id="ymax"></label>
+    <label>Legend: <input type="checkbox" id="legend" checked></label>
+    <label>Smooth: <input type="checkbox" id="smooth"></label>
+</div>
+
+<div id="chart-container">    
+    <canvas id="chart"></canvas>
+</div>
+<div class="export-buttons">
+    <button id="exportPNG" onclick="exportPNG()" disabled>Export PNG</button>
+    <button id="exportPDF" onclick="exportPDF()" disabled>Export PDF</button>
+</div>
+<div id="reason" style="margin-top:10px; font-style:italic; color:#dce1ebbe;"></div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

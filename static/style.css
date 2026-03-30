@@ -1,0 +1,315 @@
+@import url('https://fonts.googleapis.com/css2?family=BioRhyme:wght@100;300;400;500;600;700&display=swap');
+
+* {
+    font-family: 'BioRhyme', sans-serif;
+    box-sizing: border-box;
+}
+
+/* ---------- TITLEBAR ---------- */
+.titlebar {
+
+    height: 40px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 0 10px;
+
+    background: rgb(24,27,38);
+
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+
+    -webkit-app-region: drag;
+
+}
+
+.title {
+
+    font-size: 14px;
+    opacity: 0.8;
+
+}
+
+.window-controls {
+
+    display: flex;
+    gap: 6px;
+
+    -webkit-app-region: no-drag;
+
+}
+
+.window-controls button {
+
+    width: 32px;
+    height: 26px;
+
+    border: none;
+    border-radius: 6px;
+
+    background: transparent;
+
+    color: white;
+
+    cursor: pointer;
+
+}
+
+.window-controls button:hover {
+
+    background: rgba(255,255,255,0.1);
+
+}
+
+/* ---------- DESKTOP APP SCALING ---------- */
+
+.page-container {
+
+    width: 100%;
+    max-width: 1200px;
+
+    margin: 0 auto;
+    padding: 10px;
+
+}
+
+/* ---------- BODY ---------- */
+
+body {
+
+    margin: 10px;
+
+    font-size: clamp(14px, 1vw, 18px);
+
+    background-color: rgb(16, 18, 27);
+    color: rgb(220, 225, 235);
+
+}
+
+/* ---------- TITLE ---------- */
+
+h2 {
+    text-align: center;
+}
+
+/* ---------- DROPZONE ---------- */
+
+#dropzone {
+
+    border: 5px dashed rgb(90, 110, 180);
+    border-radius: 8px;
+
+    padding: clamp(20px, 4vw, 40px);
+
+    text-align: center;
+
+    cursor: pointer;
+
+    background-color: rgb(26, 30, 44);
+
+    transition: 0.2s;
+
+}
+
+#dropzone.hover {
+    background: rgb(35, 40, 60);
+}
+
+#dropzone img {
+
+    width: clamp(48px, 5vw, 64px);
+
+    display: block;
+    margin: 0 auto 10px;
+
+}
+
+/* ---------- AI CHOICES ---------- */
+
+#choices{
+
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+}
+
+#choices button {
+
+    flex: 1 1 250px;
+
+    padding: 14px;
+
+    font-size: clamp(14px, 1.2vw, 18px);
+
+    background-color: rgb(65, 140, 255);
+
+    color: rgb(255, 255, 255);
+
+    border: 2px solid rgb(40, 110, 220);
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+
+}
+
+#choices button:hover {
+    background: rgb(90, 160, 255);
+}
+
+/* ---------- STATUS ---------- */
+
+#status {
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    margin-top: 10px;
+
+    font-weight: bold;
+
+    color: rgb(220, 225, 235);
+
+}
+
+/* ---------- CHART CONTAINER ---------- */
+
+#chart-container {
+
+    position: relative;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    width: 100%;
+
+    max-width: 900px;
+
+    height: clamp(300px, 50vh, 500px);
+
+    margin: 20px auto;
+
+    background: rgb(24, 27, 38);
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,0.6),
+        0 0 0 1px rgba(255,255,255,0.05);
+
+}
+
+/* ---------- CONTROLS ---------- */
+
+.controls {
+
+    display: none;
+
+    justify-content: center;
+    align-items: center;
+
+    margin-top: 10px;
+
+}
+
+.controls label {
+
+    margin-right: 10px;
+
+}
+
+/* ---------- EXPORT BUTTONS ---------- */
+
+.export-buttons {
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    margin-top: 10px;
+
+    gap: 10px;
+
+}
+
+.export-buttons button {
+
+    padding: 6px 12px;
+
+    cursor: pointer;
+
+    background-color: rgb(65, 140, 255);
+
+    color: white;
+
+    border: 2px solid rgb(40, 110, 220);
+
+    border-radius: 10px;
+
+    transition: 0.2s;
+
+}
+
+.export-buttons button:hover {
+
+    background-color: rgb(90,160,255);
+
+}
+
+.export-buttons button:disabled {
+
+    background-color: rgb(180, 180, 180);
+
+    border: 2px solid rgb(150, 150, 150);
+
+    cursor: not-allowed;
+
+    opacity: 0.7;
+
+}
+
+/* ---------- MOBILE ADAPTATION ---------- */
+
+@media (max-width: 700px) {
+
+    #choices {
+
+        flex-direction: column;
+
+    }
+
+    #choices button {
+
+        width: 100%;
+
+    }
+
+    #chart-container {
+
+        height: 350px;
+
+    }
+
+}
+
+/* ---------- LARGE SCREENS ---------- */
+
+@media (min-width: 1600px) {
+
+    .page-container {
+
+        max-width: 1400px;
+
+    }
+
+}
