@@ -1,4 +1,4 @@
-# 🧠 AI Data Visualization Tool
+<img width="2560" height="1259" alt="instruction" src="https://github.com/user-attachments/assets/17535832-25aa-4c40-9cbd-eb2ca37c566e" /># 🧠 AI Data Visualization Tool
 
 Projekts nodrošina datu augšupielādi, analīzi un vizualizāciju, izmantojot mākslīgā intelekta metodes.
 
@@ -11,6 +11,12 @@ Lietotājs var augšupielādēt strukturētus datu failus (CSV vai Excel), sist�
 Backend izmanto Python un Flask, datu analīzei – Pandas, mākslīgā intelekta funkcionalitātei – lokāls LLM modelis ar Ollama, frontendā tiek izmantots Chart.js vizualizācijai.
 ### Ko saņem lietotājs:
 Interaktīvu datu vizualizāciju, automātiski ģenerētus grafikus un ātru datu analīzi bez nepieciešamības manuāli izvēlēties vizualizācijas veidu.
+
+---
+## 🖥 Kā lietot
+
+<img width="2560" height="1259" alt="instruction" src="https://github.com/user-attachments/assets/2be038bd-6ae7-46a8-9451-e504c2af7f9e" />
+
 
 ---
 ## 🧩 Sistēmas arhitektūra
