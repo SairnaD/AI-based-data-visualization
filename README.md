@@ -1,4 +1,4 @@
-<img width="2560" height="1259" alt="instruction" src="https://github.com/user-attachments/assets/17535832-25aa-4c40-9cbd-eb2ca37c566e" /># 🧠 AI Data Visualization Tool
+# 🧠 AI Data Visualization Tool
 
 Projekts nodrošina datu augšupielādi, analīzi un vizualizāciju, izmantojot mākslīgā intelekta metodes.
 
