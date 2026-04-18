@@ -169,6 +169,27 @@ function loadChart(s) {
             rawLabels = d.labels || [];
             rawValues = d.values || [];
 
+            let data = rawLabels.map((l, i) => ({
+                label: l,
+                value: rawValues[i]
+            }));
+
+            // --- APPLY AI SETTINGS EARLY ---
+            if (currentSettings?.sort) {
+                data.sort((a, b) =>
+                    currentSettings.sort === "desc"
+                        ? b.value - a.value
+                        : a.value - b.value
+                );
+            }
+
+            if (currentSettings?.topN) {
+                data = data.slice(0, currentSettings.topN);
+            }
+
+            rawLabels = data.map(d => d.label);
+            rawValues = data.map(d => d.value);
+
             const scale = autoScale(rawValues);
 
             chart = new Chart(document.getElementById("chart"), {
@@ -222,23 +243,39 @@ function loadChart(s) {
 /* ---------- UPLOAD ---------- */
 function uploadFile(file) {
 
-    if (!file) return;
+    const allowedTypes = [
+        "text/csv",
+        "application/vnd.ms-excel",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    ];
 
+    if (!allowedTypes.includes(file.type)) {
+        document.getElementById("status").innerText =
+            "❌ Nepareizs faila tips. Izvēlies CSV vai Excel failu.";
+        return;
+    }
+
+    if (!file) return;
 
     document.getElementById("status").innerText =
         "🧠 AI analizē datus...";
-        
-
 
     const fd = new FormData();
     fd.append("file", file);
-
 
     fetch("/upload", {
         method: "POST",
         body: fd
     })
-        .then(r => r.json())
+        .then(async r => {
+            const data = await r.json();
+
+            if (!r.ok) {
+                throw new Error(data.error || "Kļūda augšupielādē");
+            }
+
+            return data;
+        })
         .then(data => {
 
             const c = document.getElementById("choices");
@@ -253,6 +290,9 @@ function uploadFile(file) {
 
             document.getElementById("status").innerText =
                 "✅ Izvēlies vienu no AI ieteiktajiem grafikiem";
+        })
+        .catch(err => {
+            document.getElementById("status").innerText = err.message;
         });
 }
 

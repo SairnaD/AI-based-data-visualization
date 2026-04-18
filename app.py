@@ -21,12 +21,32 @@ def index():
 def upload():
     global df_global
 
+    if "file" not in request.files:
+        return jsonify({"error": "Nav augšupielādēts fails"}), 400
+
     file = request.files["file"]
-    df = (
-        pd.read_csv(file)
-        if file.filename.endswith(".csv")
-        else pd.read_excel(file)
-    )
+
+    if file.filename == "":
+        return jsonify({"error": "Nav izvēlēts fails"}), 400
+
+    allowed_extensions = [".csv", ".xlsx", ".xls"]
+    filename = file.filename.lower()
+
+    if not any(filename.endswith(ext) for ext in allowed_extensions):
+        return jsonify({
+            "error": "❌ Nepareizs faila formāts. Atļauti tikai CSV vai Excel faili (.csv, .xlsx, .xls)"
+        }), 400
+
+    try:
+        if filename.endswith(".csv"):
+            df = pd.read_csv(file)
+        else:
+            df = pd.read_excel(file)
+
+    except Exception:
+        return jsonify({
+            "error": "❌ Neizdevās nolasīt failu. Pārbaudi vai tas ir derīgs CSV/Excel fails"
+        }), 400
 
     df.ffill(inplace=True)
     df = clean_df(df)
