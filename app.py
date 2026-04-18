@@ -1,6 +1,9 @@
 from flask import Flask, render_template, request, jsonify
 import pandas as pd
-
+import openpyxl 
+import xlrd
+import io
+import lxml
 from services.data_utils import clean_df
 from services.ai_utils import ai_choose_top_charts
 
@@ -38,18 +41,39 @@ def upload():
         }), 400
 
     try:
-        if filename.endswith(".csv"):
-            df = pd.read_csv(file)
-        else:
-            df = pd.read_excel(file)
+        content = file.read()
 
-    except Exception:
+        if filename.endswith(".csv"):
+            df = pd.read_csv(io.BytesIO(content))
+
+        else:
+            try:
+                df = pd.read_excel(io.BytesIO(content), engine="openpyxl")
+            except:
+                try:
+                    df = pd.read_excel(io.BytesIO(content), engine="xlrd")
+                except:
+                    df = pd.read_html(content)[0]
+
+    except Exception as e:
+        print("File read error:", e)
         return jsonify({
-            "error": "❌ Neizdevās nolasīt failu. Pārbaudi vai tas ir derīgs CSV/Excel fails"
+            "error": f"❌ Neizdevās nolasīt failu: {str(e)}"
+        }), 400
+
+    except Exception as e:
+        print("File read error:", e)
+        return jsonify({
+            "error": f"❌ Neizdevās nolasīt failu: {str(e)}"
         }), 400
 
     df.ffill(inplace=True)
-    df = clean_df(df)
+    df_cleaned = clean_df(df)
+
+    if df_cleaned.shape[1] < 2:
+        print("⚠️ Cleaned df too small, using original")
+    else:
+        df = df_cleaned
     df_global = df
 
     charts = ai_choose_top_charts(df)

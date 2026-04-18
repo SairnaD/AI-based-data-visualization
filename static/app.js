@@ -243,13 +243,7 @@ function loadChart(s) {
 /* ---------- UPLOAD ---------- */
 function uploadFile(file) {
 
-    const allowedTypes = [
-        "text/csv",
-        "application/vnd.ms-excel",
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    ];
-
-    if (!allowedTypes.includes(file.type)) {
+    if (!file.name.match(/\.(csv|xlsx|xls)$/i)) {
         document.getElementById("status").innerText =
             "❌ Nepareizs faila tips. Izvēlies CSV vai Excel failu.";
         return;
