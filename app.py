@@ -60,13 +60,7 @@ def upload():
         return jsonify({
             "error": f"❌ Neizdevās nolasīt failu: {str(e)}"
         }), 400
-
-    except Exception as e:
-        print("File read error:", e)
-        return jsonify({
-            "error": f"❌ Neizdevās nolasīt failu: {str(e)}"
-        }), 400
-
+    
     df.ffill(inplace=True)
     df_cleaned = clean_df(df)
 
