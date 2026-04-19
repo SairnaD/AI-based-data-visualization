@@ -77,11 +77,27 @@ def upload():
 
 @app.route("/data")
 def data():
+    df = df_global.copy()
+
     x = request.args["x"]
     y = request.args.get("y")
+    if x == "categories":
+        y = request.args.get("y")
+
+        if y and "," in y:
+            y = y.split(",")
+
+        result = []
+        for col in y:
+            if col in df:
+                result.append(float(df[col].mean()))
+
+        return jsonify({
+            "labels": y,
+            "values": result
+        })
     agg = request.args.get("agg")
 
-    df = df_global.copy()
 
     if agg == "count":
         dfg = df.groupby(x).size().reset_index(name="value")
@@ -107,10 +123,11 @@ def data():
             ]
         })
     
-    if agg == "average" and isinstance(y, list):
+    if isinstance(y, list):
         result = []
         for col in y:
-            result.append(float(df[col].mean()))
+            if col in df:
+                result.append(float(df[col].mean()))
 
         return jsonify({
             "labels": y,

@@ -109,7 +109,13 @@ function loadChart(s) {
 
     applyAISettings(s);
 
-    fetch(`/data?x=${s.x}&y=${s.y}&agg=${currentSettings?.aggregation || ""}`)
+    let agg = s.settings?.aggregation || "none";
+
+    if (s.chart === "Radar Chart") {
+        agg = "average";
+    }
+
+    fetch(`/data?x=${s.x}&y=${s.y}&agg=${agg}`)
         .then(r => r.json())
         .then(d => {
 
