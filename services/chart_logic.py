@@ -6,47 +6,47 @@ def calculate_confidence(chart_type, df, col1, col2=None):
 
     confidence = 0.5
 
-    # ---------- SCATTER ----------
+    # SCATTER
     if chart_type == "scatter" and col2:
         corr = correlation_score(df, col1, col2)
         confidence = min(1.0, 0.5 + corr)
 
-    # ---------- BAR ----------
+    # BAR
     elif chart_type == "bar":
         unique_ratio = df[col1].nunique() / len(df[col1])
         confidence = min(1.0, 0.5 + (1 - unique_ratio))
 
-    # ---------- PIE ----------
+    # PIE
     elif chart_type == "pie":
         unique_count = df[col1].nunique()
         balance = min(1.0, 10 / (unique_count + 1))
         confidence = 0.6 + 0.4 * balance
 
-    # ---------- DOUGHNUT ----------
+    # DOUGHNUT
     elif chart_type == "doughnut":
         unique_count = df[col1].nunique()
         balance = min(1.0, 8 / (unique_count + 1))
         confidence = 0.6 + 0.4 * balance
 
-    # ---------- LINE ----------
+    # LINE
     elif chart_type == "line" and col2:
         corr = correlation_score(df, col1, col2)
         confidence = min(1.0, 0.5 + corr * 0.8)
 
-    # ---------- AREA ----------
+    # AREA
     elif chart_type == "area" and col2:
         variance = df[col2].var()
         normalized_var = min(1.0, variance / (variance + 1))
         confidence = 0.5 + 0.5 * normalized_var
 
-    # ---------- RADAR ----------
+    # RADAR
     elif chart_type == "radar" and isinstance(col2, list):
         variances = [df[c].var() for c in col2 if c in df]
         if variances:
             avg_var = sum(variances) / len(variances)
             confidence = min(1.0, 0.5 + avg_var / (avg_var + 1))
 
-    # ---------- POLAR ----------
+    # POLAR
     elif chart_type == "polar area":
         unique_count = df[col1].nunique()
         confidence = min(1.0, 0.5 + (1 / (unique_count + 1)))
@@ -152,7 +152,7 @@ def fallback_charts(df):
             "reason": reason
         })
     
-        # ---------- RADAR ----------
+        # RADAR
     if len(numeric_sorted) >= 3:
         radar_cols = numeric_sorted[:5]
 
@@ -168,7 +168,7 @@ def fallback_charts(df):
             "reason": generate_reason("radar", df, None, radar_cols)
         })
 
-    # ---------- POLAR ----------
+    # POLAR
     if categorical_sorted and numeric_sorted:
         charts.append({
             "chart": "Polar Area Chart",
