@@ -136,8 +136,8 @@ def fallback_charts(df):
     if categorical_sorted:
         x = categorical_sorted[0]
 
-        confidence = calculate_confidence("bar", df, x)
-        reason = generate_reason("bar", df, x)
+        confidence = calculate_confidence("pie", df, x)
+        reason = generate_reason("pie", df, x)
 
         charts.append({
             "chart": "Pie Chart",
