@@ -125,27 +125,6 @@ NO explanations. NO markdown.
             print(f"⚠️ Skip: Unknown type {ct}")
             continue
 
-        if x != "__count__" and x not in df.columns:
-            print(f"⚠️ Skip: no column {x}")
-            continue
-
-        if y and isinstance(y, str) and y not in df.columns and y != "__count__":
-            print(f"⚠️ Skip: No column {y}")
-            continue
-
-        if ct == "Bar Chart" and x in numeric:
-            print("⚠️ Bar Chart с numeric X → skip")
-            continue
-
-        if ct == "Line Chart" and x in categorical:
-            print("⚠️ Line Chart с categorical X → skip")
-            continue
-
-        if ct == "Scatter Chart":
-            if x in categorical or y in categorical:
-                print("⚠️ Scatter needs numeric → skip")
-                continue
-
         if ct in used_types:
             continue
 
@@ -156,7 +135,10 @@ NO explanations. NO markdown.
         used_pairs.add((x, str(y)))
 
         chart_type_lower = ct.lower().replace(" chart", "").strip()
-        confidence = float(calculate_confidence(chart_type_lower, df, x, y))
+        if x == "__count__":
+            confidence = 0.9
+        else:
+            confidence = float(calculate_confidence(chart_type_lower, df, x, y))
         reason = generate_reason(chart_type_lower, df, x, y)
 
         agg = c.get("aggregation")

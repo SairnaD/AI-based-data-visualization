@@ -6,6 +6,9 @@ def calculate_confidence(chart_type, df, col1, col2=None):
 
     confidence = 0.5
 
+    if col1 == "__count__" or col2 == "__count__":
+        return 0.9
+
     # SCATTER
     if chart_type == "scatter" and col2:
         corr = correlation_score(df, col1, col2)
@@ -55,6 +58,9 @@ def calculate_confidence(chart_type, df, col1, col2=None):
 
 
 def generate_reason(chart_type, df, col1, col2=None):
+
+    if col1 == "__count__" or col2 == "__count__":
+        return "• Count-based aggregation (category distribution)"
 
     if chart_type == "scatter" and col2:
         corr = correlation_score(df, col1, col2)
