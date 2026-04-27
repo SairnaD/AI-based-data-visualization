@@ -6,6 +6,7 @@ import io
 import lxml
 from services.data_utils import clean_df
 from services.ai_utils import ai_choose_top_charts
+import numpy as np
 
 from flask_cors import CORS
 
@@ -77,13 +78,27 @@ def upload():
 
 @app.route("/data")
 def data():
+    global df_global
+
+    if df_global is None:
+        return jsonify({"error": "❌ Data not loaded (server restarted)"}), 400
+
     df = df_global.copy()
 
     x = request.args["x"]
     y = request.args.get("y")
-    if x == "categories":
-        y = request.args.get("y")
+    agg = request.args.get("agg")
 
+    if y == "__count__":
+
+        dfg = df.groupby(x).size().reset_index(name="value")
+
+        return jsonify({
+            "labels": dfg[x].astype(str).tolist(),
+            "values": dfg["value"].tolist()
+        })
+
+    if x == "categories":
         if y and "," in y:
             y = y.split(",")
 
@@ -96,21 +111,24 @@ def data():
             "labels": y,
             "values": result
         })
-    agg = request.args.get("agg")
-
 
     if agg == "count":
         dfg = df.groupby(x).size().reset_index(name="value")
         return jsonify({
-            "labels": dfg[x].tolist(),
+            "labels": dfg[x].astype(str).tolist(),
             "values": dfg["value"].tolist()
         })
 
+
     if agg == "average":
-        dfg = df.groupby(x)[y].mean().reset_index()
+        if not np.issubdtype(df[y].dtype, np.number):
+            dfg = df.groupby(x)[y].count().reset_index(name="value")
+        else:
+            dfg = df.groupby(x)[y].mean().reset_index(name="value")
+
         return jsonify({
-            "labels": dfg[x].tolist(),
-            "values": dfg[y].tolist()
+            "labels": dfg[x].astype(str).tolist(),
+            "values": dfg["value"].tolist()
         })
 
     if agg == "none":
@@ -138,4 +156,4 @@ def data():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, use_reloader=False)

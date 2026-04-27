@@ -85,6 +85,7 @@ def generate_reason(chart_type, df, col1, col2=None):
 
 
 def fallback_charts(df):
+    print("🛑 === FALLBACK MODE ACTIVATED ===")
     categorical = df.select_dtypes(exclude=np.number).columns.tolist()
     numeric = df.select_dtypes(include=np.number).columns.tolist()
 
