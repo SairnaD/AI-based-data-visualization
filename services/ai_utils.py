@@ -120,6 +120,12 @@ NO explanations. NO markdown.
         ct = c.get("chart")
         x = c.get("x")
         y = c.get("y")
+        
+        if not x or x is None:
+            continue
+        
+        if y is None:
+            y = "__count__"
 
         if ct not in CHART_TYPES:
             print(f"⚠️ Skip: Unknown type {ct}")

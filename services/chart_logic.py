@@ -5,6 +5,9 @@ from services.data_utils import numeric_score, categorical_score, correlation_sc
 def calculate_confidence(chart_type, df, col1, col2=None):
 
     confidence = 0.5
+    
+    if col1 is None:
+        return 0.0
 
     if col1 == "__count__" or col2 == "__count__":
         return 0.9

@@ -121,7 +121,7 @@ def data():
 
 
     if agg == "average":
-        if not np.issubdtype(df[y].dtype, np.number):
+        if not pd.api.types.is_numeric_dtype(df[y]):
             dfg = df.groupby(x)[y].count().reset_index(name="value")
         else:
             dfg = df.groupby(x)[y].mean().reset_index(name="value")
@@ -133,6 +133,13 @@ def data():
 
     if agg == "none":
         df = df[[x, y]].dropna()
+        
+        MAX_POINTS = 1000
+
+        if len(df) > MAX_POINTS:
+            print(f"⚡ Sampling {MAX_POINTS} from {len(df)} rows")
+
+            df = df.sample(n=MAX_POINTS, random_state=42)
 
         return jsonify({
             "points": [
