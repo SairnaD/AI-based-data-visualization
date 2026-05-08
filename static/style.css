@@ -313,3 +313,70 @@ h2 {
     }
 
 }
+
+/* ---------- DISCLAIMER POPUP ---------- */
+
+#disclaimer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    background: rgba(0,0,0,0.7);
+
+    display: none;
+
+    justify-content: center;
+    align-items: center;
+
+    z-index: 9999;
+}
+
+#disclaimer-popup {
+
+    background: rgb(24, 27, 38);
+
+    color: rgb(220, 225, 235);
+
+    padding: 25px;
+
+    max-width: 420px;
+
+    border-radius: 12px;
+
+    text-align: center;
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,0.6),
+        0 0 0 1px rgba(255,255,255,0.05);
+
+}
+
+#disclaimer-popup h3 {
+    margin-bottom: 10px;
+}
+
+#disclaimer-popup button {
+
+    margin-top: 15px;
+
+    padding: 8px 16px;
+
+    background-color: rgb(65, 140, 255);
+
+    border: 2px solid rgb(40, 110, 220);
+
+    color: white;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+
+}
+
+#disclaimer-popup button:hover {
+    background-color: rgb(90,160,255);
+}

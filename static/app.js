@@ -355,3 +355,16 @@ function exportPDF() {
     pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
     pdf.save("chart.pdf");
 }
+
+/* ---------- DISCLAIMER ---------- */
+
+function acceptDisclaimer() {
+    localStorage.setItem("disclaimerAccepted", "true");
+    document.getElementById("disclaimer-overlay").style.display = "none";
+}
+
+window.addEventListener("load", () => {
+    if (!localStorage.getItem("disclaimerAccepted")) {
+        document.getElementById("disclaimer-overlay").style.display = "flex";
+    }
+});

@@ -50,8 +50,8 @@ def ai_choose_top_charts(df):
         print("⚠️ No matching collumns → FALLBACK")
         return fallback_charts(df)
 
-    sample_cols = (categorical + numeric)[:6]
-    sample = df[sample_cols].head(10)
+    sample_cols = categorical[:3] + numeric[:4]
+    sample = df[sample_cols].sample(n=min(20, len(df)), random_state=42)
 
     prompt = f"""
 You are a senior data visualization expert.
