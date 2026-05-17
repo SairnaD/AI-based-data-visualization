@@ -3,6 +3,8 @@ let rawValues = [];
 let chart;
 let currentSettings = null;
 
+Chart.register(ChartDataLabels);
+
 /* ---------- AUTO SCALE ---------- */
 function autoScale(values) {
     if (!values || values.length === 0) return { min: null, max: null };
@@ -30,6 +32,7 @@ function getSettings() {
         ymax: document.getElementById("ymax").value || null,
         legend: document.getElementById("legend").checked,
         smooth: document.getElementById("smooth").checked,
+        showValues: document.getElementById("showValues").checked,
         aggregation: currentSettings?.aggregation || null
     };
 }
@@ -95,6 +98,9 @@ function updateChart() {
 
     chart.data.datasets[0].tension = s.smooth ? 0.4 : 0;
 
+    chart.options.plugins.datalabels.display =
+        s.showValues;
+
     chart.update();
 }
 
@@ -102,8 +108,10 @@ function updateChart() {
 function loadChart(s) {
 
     document.getElementById("status").innerText = "📊 Ielādē grafiku...";
+
     const controls = document.querySelector('.controls');
     controls.style.display = 'flex';
+
     document.getElementById("exportPNG").disabled = false;
     document.getElementById("exportPDF").disabled = false;
 
@@ -150,7 +158,12 @@ function loadChart(s) {
                     options: {
                         responsive: true,
                         plugins: {
-                            legend: { display: currentSettings?.legend ?? false }
+                            legend: { display: currentSettings?.legend ?? false },
+                            datalabels: { display: false },
+                            zoom: {
+                                pan: { enabled: true, mode: "x" },
+                                zoom: { wheel: { enabled: true }, mode: "x" }
+                            }
                         },
                         scales: {
                             x: {
@@ -163,10 +176,16 @@ function loadChart(s) {
                     }
                 });
 
-                document.getElementById("reason").innerText =
-                    "🧠 AI skaidrojums:\n" + (s.reason || "");
-
                 document.getElementById("status").innerText = "";
+
+                /* ---------- AI INSIGHT (SCATTER) ---------- */
+                fetch(`/insight?x=${s.x}&y=${s.y}&agg=${agg}`)
+                    .then(r => r.json())
+                    .then(d => {
+                        document.getElementById("reason").innerText =
+                            "🧠 AI interpretācija:\n" + (d.insight || "Nav pieejama interpretācija");
+                    });
+
                 return;
             }
 
@@ -180,7 +199,6 @@ function loadChart(s) {
                 value: rawValues[i]
             }));
 
-            // --- APPLY AI SETTINGS EARLY ---
             if (currentSettings?.sort) {
                 data.sort((a, b) =>
                     currentSettings.sort === "desc"
@@ -217,6 +235,14 @@ function loadChart(s) {
                         legend: {
                             display: currentSettings?.legend ?? true
                         },
+                        datalabels: {
+                            display: currentSettings?.showValues ?? false,
+                            color: "#FFFFFF",
+                            anchor: "end",
+                            align: "top",
+                            font: { weight: "bold", size: 11 },
+                            formatter: value => value
+                        },
                         zoom: {
                             pan: { enabled: true, mode: "x" },
                             zoom: { wheel: { enabled: true }, mode: "x" }
@@ -231,18 +257,27 @@ function loadChart(s) {
                                   y: {
                                       min: currentSettings?.ymin || scale.min,
                                       max: currentSettings?.ymax || scale.max
-                                  }
                               }
+                          }
                 }
             });
 
             updateChart();
 
-            document.getElementById("reason").innerText =
-                "🧠 AI skaidrojums:\n" +
-                (s.reason || "• Automātiski ģenerēts skaidrojums");
-
             document.getElementById("status").innerText = "";
+
+            /* ---------- AI INSIGHT (OTHER CHARTS) ---------- */
+            fetch(`/insight?x=${s.x}&y=${s.y}&agg=${agg}`)
+                .then(r => r.json())
+                .then(d => {
+                    document.getElementById("reason").innerText =
+                        "🧠 AI interpretācija:\n" + (d.insight || "Nav pieejama interpretācija");
+                })
+                .catch(() => {
+                    document.getElementById("reason").innerText =
+                        "🧠 AI interpretācija nav pieejama";
+                });
+
         });
 }
 
@@ -323,7 +358,7 @@ dz.ondrop = e => {
 
 /* ---------- AUTO UPDATE ON CONTROL CHANGE ---------- */
 document
-    .querySelectorAll("#topN, #sort, #ymin, #ymax, #legend, #smooth")
+    .querySelectorAll("#topN, #sort, #ymin, #ymax, #legend, #smooth, #showValues")
     .forEach(el => {
         el.addEventListener("change", updateChart);
     });
@@ -358,13 +393,41 @@ function exportPDF() {
 
 /* ---------- DISCLAIMER ---------- */
 
+const DISCLAIMER_KEY = "disclaimerAcceptedAt";
+const DISCLAIMER_DAYS = 1;
+
 function acceptDisclaimer() {
-    localStorage.setItem("disclaimerAccepted", "true");
+
+    const now = new Date().getTime();
+
+    localStorage.setItem(DISCLAIMER_KEY, now);
+
     document.getElementById("disclaimer-overlay").style.display = "none";
 }
 
-window.addEventListener("load", () => {
-    if (!localStorage.getItem("disclaimerAccepted")) {
-        document.getElementById("disclaimer-overlay").style.display = "flex";
+function shouldShowDisclaimer() {
+
+    const saved = localStorage.getItem(DISCLAIMER_KEY);
+
+    if (!saved) {
+        return true;
     }
+
+    const savedTime = parseInt(saved);
+    const now = new Date().getTime();
+
+    const daysPassed =
+        (now - savedTime) / (1000 * 60 * 60 * 24);
+
+    return daysPassed >= DISCLAIMER_DAYS;
+}
+
+window.addEventListener("load", () => {
+
+    if (shouldShowDisclaimer()) {
+
+        document.getElementById("disclaimer-overlay").style.display = "flex";
+
+    }
+
 });

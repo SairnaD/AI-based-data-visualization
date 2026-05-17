@@ -33,17 +33,25 @@ else
     echo "✅ Ollama already installed"
 fi
 
-# 4. Pull model
-MODEL="llama3.1:8b-instruct-q4_K_M"
+# 4. Pull models
+MODEL_CHART="qwen2.5:7b-instruct-q4_K_M"   # chart selection — strict JSON
+MODEL_INSIGHT="qwen3:4b-q4_K_M"             # insight generation — natural Latvian prose
 
-echo "🧠 Checking model: $MODEL"
+pull_model() {
+    local MODEL=$1
+    echo ""
+    echo "🧠 Checking model: $MODEL"
+    if ! ollama show "$MODEL" &> /dev/null; then
+        echo "⬇️ Pulling model: $MODEL ..."
+        ollama pull "$MODEL"
+        echo "✅ $MODEL ready"
+    else
+        echo "✅ $MODEL already exists"
+    fi
+}
 
-if ! ollama show "$MODEL" &> /dev/null; then
-    echo "⬇️ Pulling model..."
-    ollama pull "$MODEL"
-else
-    echo "✅ Model already exists"
-fi
+pull_model "$MODEL_CHART"
+pull_model "$MODEL_INSIGHT"
 
 echo ""
 echo "🎉 Setup complete!"

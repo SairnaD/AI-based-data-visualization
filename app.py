@@ -5,7 +5,7 @@ import xlrd
 import io
 import lxml
 from services.data_utils import clean_df
-from services.ai_utils import ai_choose_top_charts
+from services.ai_utils import ai_choose_top_charts, generate_chart_insight
 import numpy as np
 
 from flask_cors import CORS
@@ -119,7 +119,6 @@ def data():
             "values": dfg["value"].tolist()
         })
 
-
     if agg == "average":
         if not pd.api.types.is_numeric_dtype(df[y]):
             dfg = df.groupby(x)[y].count().reset_index(name="value")
@@ -133,12 +132,10 @@ def data():
 
     if agg == "none":
         df = df[[x, y]].dropna()
-        
+
         MAX_POINTS = 1000
 
         if len(df) > MAX_POINTS:
-            print(f"⚡ Sampling {MAX_POINTS} from {len(df)} rows")
-
             df = df.sample(n=MAX_POINTS, random_state=42)
 
         return jsonify({
@@ -147,20 +144,57 @@ def data():
                 for _, row in df.iterrows()
             ]
         })
-    
-    if isinstance(y, list):
-        result = []
-        for col in y:
-            if col in df:
-                result.append(float(df[col].mean()))
-
-        return jsonify({
-            "labels": y,
-            "values": result
-        })
 
     return jsonify({})
 
+
+@app.route("/insight")
+def insight():
+    global df_global
+
+    if df_global is None:
+        return jsonify({"insight": "Nav datu"}), 400
+
+    df = df_global.copy()
+
+    x = request.args.get("x")
+    y = request.args.get("y")
+    agg = request.args.get("agg")
+
+    try:
+        if y == "__count__" or agg == "count":
+            dfg = df.groupby(x).size().reset_index(name="value")
+
+            labels = dfg[x].astype(str).tolist()
+            values = dfg["value"].tolist()
+
+        elif agg == "none" and y in df.columns:
+            df_clean = df[[x, y]].dropna()
+
+            if len(df_clean) < 2:
+                return jsonify({"insight": "Nepietiek datu analīzei"})
+
+            corr = df_clean[x].corr(df_clean[y]) if df_clean[x].dtype != "O" else 0
+
+            labels = ["correlation"]
+            values = [round(corr, 3) if corr == corr else 0]
+
+        elif agg == "average" and y in df.columns:
+            dfg = df.groupby(x)[y].mean().reset_index(name="value")
+
+            labels = dfg[x].astype(str).tolist()
+            values = dfg["value"].tolist()
+
+        else:
+            return jsonify({"insight": "Nav derīgu datu analīzei"})
+
+        insight = generate_chart_insight("chart", labels, values)
+
+        return jsonify({"insight": insight})
+
+    except Exception as e:
+        print("INSIGHT ERROR:", e)
+        return jsonify({"insight": "AI kļūda"}), 500
 
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False)
