@@ -101,6 +101,9 @@ Dataset column summary:
 
 Rules:
 - Propose EXACTLY 3 charts
+- y MUST contain exactly ONE column name
+- Never return multiple columns in y
+- Never separate columns with commas
 - Rank from MOST to LEAST informative
 - Prefer charts that reveal trends, distributions, or correlations
 - Avoid redundant charts — different types preferred if they add value
@@ -108,9 +111,14 @@ Rules:
 - Use "__count__" as y when no numeric column fits (e.g. Pie, Bar by category)
 - Ignore columns with high null_pct or low unique count if uninformative
 
-Respond as a JSON object with a "charts" key containing an array of exactly 3 objects:
+Respond as a JSON object with a "charts" key containing an array of exactly 3 chart configuration objects.
+
+The following JSON is ONLY an example of the expected structure and format.
+Do NOT copy it literally, and do NOT use the same chart types or column names unless they are actually appropriate for the provided data.
+
+Example:
 [
-  {{"chart": "Bar Chart", "x": "category_column", "y": "numeric_column"}},
+  {{"chart": "Bar Chart",  "x": "category_column", "y": "numeric_column"}},
   {{"chart": "Line Chart", "x": "date_column",     "y": "numeric_column"}},
   {{"chart": "Pie Chart",  "x": "category_column", "y": "__count__"}}
 ]
@@ -250,7 +258,7 @@ Values: {values_text}
         result = safe_ai_call(
             prompt,
             system_prompt=system_prompt,
-            timeout=60,
+            timeout=180,
             use_json_format=False,
             model=MODEL_INSIGHT
         )
